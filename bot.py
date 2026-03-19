@@ -1,3 +1,4 @@
+import os
 import asyncio
 import json
 import logging
@@ -11,7 +12,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
-BOT_TOKEN = "8362460904:AAHQPaB-lzXxD26cOAUagtJRrc5dM5rYSp4"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 logging.basicConfig(level=logging.INFO)
 
