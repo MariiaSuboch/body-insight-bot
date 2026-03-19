@@ -244,32 +244,63 @@ def build_location_text(data: dict) -> str:
 
 
 def build_reflection(data: dict) -> str:
-    now_text = datetime.now().strftime("%d.%m.%Y %H:%M")
-    breathing = data.get("breathing", "не вказано")
+    breathing = data.get("breathing")
     location = build_location_text(data)
-    valence = data.get("valence", "не вказано")
-    feeling = data.get("feeling", "не вказано")
-    movement = data.get("movement_type", "не вказано")
-    direction = data.get("direction", "")
-    intensity = data.get("intensity", "не вказано")
-    emotion = data.get("emotion", "не вказано")
+    valence = data.get("valence")
+    feeling = data.get("feeling")
+    intensity = data.get("intensity")
+    emotion = data.get("emotion")
 
-    movement_text = movement.lower()
-    if movement.lower() == "рухається" and direction:
-        movement_text = f"рухається ({direction.lower()})"
+    text = "Зараз ти помічаєш:\n"
 
-    return (
-        "Ось що зараз вдалося помітити:\n\n"
-        f"🕒 Дата і час: {now_text}\n"
-        f"🌬 Дихання: {breathing.lower() if isinstance(breathing, str) else breathing}\n"
-        f"📍 Де в тілі: {location}\n"
-        f"🧭 Оцінка відчуття: {valence.lower() if isinstance(valence, str) else valence}\n"
-        f"🫧 Назва відчуття: {feeling.lower() if isinstance(feeling, str) else feeling}\n"
-        f"🔄 Рух: {movement_text}\n"
-        f"📈 Інтенсивність: {intensity}/10\n"
-        f"💛 Емоційно це найбільше схоже на: {emotion.lower() if isinstance(emotion, str) else emotion}\n\n"
-        "Це не діагноз і не оцінка. Це просто спосіб м’якше побути в контакті з собою."
-    )
+    if breathing and breathing != "не вказано":
+        text += f"• дихання: {breathing.lower() if isinstance(breathing, str) else breathing}\n"
+
+    if location and location != "не вказано":
+        text += f"• зона: {location}\n"
+
+    if valence and valence != "не вказано":
+        text += f"• відчуття за тоном: {valence.lower() if isinstance(valence, str) else valence}\n"
+
+    if feeling and feeling != "не вказано":
+        text += f"• назва відчуття: {feeling.lower() if isinstance(feeling, str) else feeling}\n"
+
+    if intensity and intensity != "не вказано":
+        text += f"• інтенсивність: {intensity}/10\n"
+
+    if emotion and emotion != "не вказано":
+        text += f"• емоційно це найбільше схоже на: {emotion.lower() if isinstance(emotion, str) else emotion}\n"
+
+    text += "\n"
+
+    try:
+        intensity_num = int(intensity) if intensity not in [None, "", "не вказано"] else None
+    except ValueError:
+        intensity_num = None
+
+    if intensity_num is not None and intensity_num >= 7:
+        text += "Схоже, в тілі зараз досить багато напруги.\n"
+    elif intensity_num is not None and intensity_num <= 3:
+        text += "Схоже, зараз у тілі більше спокою або нейтральності.\n"
+    else:
+        text += "Схоже, стан десь посередині — і це ок.\n"
+
+    if isinstance(breathing, str) and breathing.lower() in ["поверхневе", "стиснуте"]:
+        text += "Можливо, дихання зараз трохи обмежене — так часто буває при напрузі.\n"
+
+    if isinstance(valence, str) and valence.lower() == "неприємне":
+        text += "Схоже, тіло намагається звернути твою увагу на щось важливе.\n"
+
+    if isinstance(emotion, str) and emotion.lower() in ["тривога", "страх"]:
+        text += "Можливо, зараз особливо важливо дати собі трохи більше опори й безпеки.\n"
+    elif isinstance(emotion, str) and emotion.lower() in ["гнів", "злість"]:
+        text += "Можливо, в тілі є багато енергії, якій хочеться руху або виходу.\n"
+    elif isinstance(emotion, str) and emotion.lower() in ["сум", "печаль"]:
+        text += "Можливо, зараз хочеться трохи м’якості, сповільнення або підтримки.\n"
+
+    text += "\nЦе не діагноз і не оцінка. Це спосіб м’якше побути в контакті з собою."
+
+    return text
 
 
 def suggest_practice(data: dict) -> str:
@@ -343,6 +374,42 @@ def stats_text(entries: list) -> str:
         f"{top_items(emotions, 'Найчастіші емоції:')}"
     )
 
+def generate_reflection(data: dict) -> str:
+    breath = data.get("breath")
+    zone = data.get("zone")
+    feeling = data.get("feeling")
+    intensity = data.get("intensity")
+    emotion = data.get("emotion")
+
+    text = "Зараз ти помічаєш:\n"
+
+    if breath:
+        text += f"• дихання: {breath}\n"
+    if zone:
+        text += f"• зона: {zone}\n"
+    if feeling:
+        text += f"• відчуття: {feeling}\n"
+    if intensity:
+        text += f"• інтенсивність: {intensity}/10\n"
+    if emotion:
+        text += f"• емоція: {emotion}\n"
+
+    text += "\n"
+
+    # логіка м’якого віддзеркалення
+    if intensity and int(intensity) >= 7:
+        text += "Схоже, в тілі зараз досить багато напруги.\n"
+    elif intensity and int(intensity) <= 3:
+        text += "Схоже, зараз у тілі більше спокою або нейтральності.\n"
+    else:
+        text += "Схоже, стан десь посередині — і це ок.\n"
+
+    if breath in ["поверхневе", "стиснуте"]:
+        text += "Можливо, дихання трохи обмежене — це часто буває при напрузі.\n"
+
+    text += "\nЯкщо хочеться, можна просто побути з цим ще кілька секунд."
+
+    return text    
 
 # =========================
 # КЛАВІАТУРИ
@@ -363,7 +430,7 @@ def start_menu():
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="🧠 Почати check-in")],
-            [KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
@@ -559,9 +626,9 @@ def emotion_menu():
 def summary_menu():
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton(text="Що можна зробити зараз")],
-            [KeyboardButton(text="Зберегти запис"), KeyboardButton(text="Додати нотатку")],
-            [KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="🌿 Що допоможе зараз")],
+            [KeyboardButton(text="💾 Зберегти запис"), KeyboardButton(text="✍️ Додати нотатку")],
+            [KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
@@ -571,7 +638,7 @@ def after_save_menu():
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="Ще один check-in")],
-            [KeyboardButton(text="Подивитись історію"), KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="Подивитись історію"), KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
@@ -594,7 +661,7 @@ def settings_menu():
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="Видалити всі записи")],
-            [KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
@@ -618,7 +685,7 @@ def emotion_dictionary_categories_menu():
             [KeyboardButton(text="Соціальні емоції і почуття")],
             [KeyboardButton(text="Складні почуття")],
             [KeyboardButton(text="Стани, спричинені гамою почуттів")],
-            [KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
@@ -632,7 +699,7 @@ def emotion_list_menu(items: list[str]):
             row.append(KeyboardButton(text=items[i + 1]))
         rows.append(row)
     rows.append([KeyboardButton(text="Назад до категорій")])
-    rows.append([KeyboardButton(text="Головне меню")])
+    rows.append([KeyboardButton(text="🏠 Головне меню")])
     return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 
@@ -680,7 +747,7 @@ async def main():
         )
         await state.set_state(CheckInStates.waiting_for_start_choice)
 
-    @dp.message(F.text == "Головне меню")
+    @dp.message(F.text == "🏠 Головне меню")
     async def go_to_main_menu(message: Message, state: FSMContext):
         await state.clear()
         await message.answer("Ти в головному меню.", reply_markup=main_menu())
@@ -911,17 +978,21 @@ async def main():
         await message.answer(reflection, reply_markup=summary_menu())
         await state.set_state(CheckInStates.waiting_after_summary)
 
+
     # -------- SUMMARY ACTIONS --------
-    @dp.message(CheckInStates.waiting_after_summary, F.text == "Що можна зробити зараз")
+    @dp.message(CheckInStates.waiting_after_summary, F.text == "🌿 Що допоможе зараз")
     async def show_practice_after_summary(message: Message, state: FSMContext):
         data = await state.get_data()
-        await message.answer(suggest_practice(data), reply_markup=summary_menu())
+        await message.answer(
+            suggest_practice(data),
+            reply_markup=summary_menu()
+        )
 
-    @dp.message(CheckInStates.waiting_after_summary, F.text == "Додати нотатку")
+    @dp.message(CheckInStates.waiting_after_summary, F.text == "✍️ Додати нотатку")
     async def ask_note(message: Message, state: FSMContext):
         await message.answer(
             "Можна одним реченням. Додай думку, контекст або те, що хочеться не загубити.",
-            reply_markup=ReplyKeyboardRemove(),
+             reply_markup=ReplyKeyboardRemove(),
         )
         await state.set_state(CheckInStates.waiting_for_note)
 
@@ -934,7 +1005,7 @@ async def main():
         )
         await state.set_state(CheckInStates.waiting_after_summary)
 
-    @dp.message(CheckInStates.waiting_after_summary, F.text == "Зберегти запис")
+    @dp.message(CheckInStates.waiting_after_summary, F.text == "💾 Зберегти запис")
     async def save_final_entry(message: Message, state: FSMContext):
         data = await state.get_data()
 
