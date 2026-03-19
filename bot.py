@@ -1051,11 +1051,11 @@ async def main():
 
     @dp.message(F.text.in_(list(EMOTION_DICTIONARY_STAGE2.keys())))
     async def show_emotion_category(message: Message):
-    items = EMOTION_DICTIONARY_STAGE2[message.text]
-    await message.answer(
-        f"{message.text}:",
-        reply_markup=emotion_list_menu(items)
-    )
+        items = EMOTION_DICTIONARY_STAGE2[message.text]
+        await message.answer(
+            f"{message.text}:",
+            reply_markup=emotion_list_menu(items)
+        )
 
     @dp.message(F.text == "Назад до категорій")
     async def back_to_emotion_categories(message: Message):
@@ -1065,36 +1065,36 @@ async def main():
         )
 
     @dp.message(F.text.in_(
-    sum([v for v in EMOTION_DICTIONARY_STAGE2.values()], [])
-))
-async def show_emotion_item(message: Message):
-    raw = message.text
-    base_word = raw.split(":")[0].strip().lower()
+        sum([v for v in EMOTION_DICTIONARY_STAGE2.values()], [])
+    ))
+    async def show_emotion_item(message: Message):
+        raw = message.text
+        base_word = raw.split(":")[0].strip().lower()
 
-    details = EMOTION_DETAILS.get(base_word)
+        details = EMOTION_DETAILS.get(base_word)
 
-    if details:
-        text = (
-            f"{raw}\n\n"
-            f"Що це за емоція чи почуття:\n{details['what']}\n\n"
-            f"Як це може відчуватись у тілі:\n{details['body']}\n\n"
-            f"Про що це може бути:\n{details['about']}"
+        if details:
+            text = (
+                f"{raw}\n\n"
+                f"Що це за емоція чи почуття:\n{details['what']}\n\n"
+                f"Як це може відчуватись у тілі:\n{details['body']}\n\n"
+                f"Про що це може бути:\n{details['about']}"
+            )
+        else:
+            text = (
+                f"{raw}\n\n"
+                "Що це за емоція чи почуття:\n"
+                "Це стан або почуття, яке може бути тоншим, складнішим або більш контекстним, ніж базові емоції.\n\n"
+                "Як це може відчуватись у тілі:\n"
+                "У тілі такі стани часто проявляються через зміни напруги, дихання, тонусу, температури, рухливості або контакту із собою.\n\n"
+                "Про що це може бути:\n"
+                "Часто такі стани пов’язані зі стосунками, досвідом, уявленням про себе, втомою, розчаруванням, надією або потребою в опорі."
+            )
+
+        await message.answer(
+            text,
+            reply_markup=emotion_dictionary_categories_menu()
         )
-    else:
-        text = (
-            f"{raw}\n\n"
-            "Що це за емоція чи почуття:\n"
-            "Це стан або почуття, яке може бути тоншим, складнішим або більш контекстним, ніж базові емоції.\n\n"
-            "Як це може відчуватись у тілі:\n"
-            "У тілі такі стани часто проявляються через зміни напруги, дихання, тонусу, температури, рухливості або контакту із собою.\n\n"
-            "Про що це може бути:\n"
-            "Часто такі стани пов’язані зі стосунками, досвідом, уявленням про себе, втомою, розчаруванням, надією або потребою в опорі."
-        )
-
-    await message.answer(
-        text,
-        reply_markup=emotion_dictionary_categories_menu()
-    )
 
     # -------- PRACTICES --------
     @dp.message(F.text == "🌿 Практика на 1 хвилину")
