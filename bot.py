@@ -70,7 +70,7 @@ BODY_DICTIONARY = {
         "спустошення — ніби щось вичерпалось або стало порожнім",
         "порожнеча — відчуття відсутності наповнення, контакту або опори",
         "голод — тілесна потреба в їжі або енергії",
-        "жага — потреба у воді, зволоженні, відновленні",
+        "спрага — потреба у воді, зволоженні, відновленні",
         "насичення — достатність, завершеність, більше не хочеться додавати",
     ],
     "Тонус і енергія": [
@@ -567,7 +567,7 @@ def feeling_more_menu():
             [KeyboardButton(text="Тиск"), KeyboardButton(text="Здавлювання")],
             [KeyboardButton(text="Розслаблення"), KeyboardButton(text="Легкість")],
             [KeyboardButton(text="Переповнення"), KeyboardButton(text="Спустошення")],
-            [KeyboardButton(text="Голод"), KeyboardButton(text="Жага")],
+            [KeyboardButton(text="Голод"), KeyboardButton(text="Спрага")],
             [KeyboardButton(text="Насичення"), KeyboardButton(text="Активація")],
             [KeyboardButton(text="Завмирання"), KeyboardButton(text="Пожвавлення")],
             [KeyboardButton(text="Скручування"), KeyboardButton(text="Розкриття")],
@@ -672,7 +672,7 @@ def dictionary_menu():
         keyboard=[
             [KeyboardButton(text="Відчуття за категоріями"), KeyboardButton(text="Відчуття → можлива емоція")],
             [KeyboardButton(text="Типи відчуттів")],
-            [KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
