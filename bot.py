@@ -651,7 +651,7 @@ def practice_menu():
             [KeyboardButton(text="Кордони"), KeyboardButton(text="Активація енергії")],
             [KeyboardButton(text="Зниження енергії"), KeyboardButton(text="Тілесний сканер")],
             [KeyboardButton(text="Дихальні вправи")],
-            [KeyboardButton(text="Головне меню")],
+            [KeyboardButton(text="🏠 Головне меню")],
         ],
         resize_keyboard=True
     )
